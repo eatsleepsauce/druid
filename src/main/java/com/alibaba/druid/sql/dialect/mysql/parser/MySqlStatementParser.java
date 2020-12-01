@@ -1935,6 +1935,20 @@ public class MySqlStatementParser extends SQLStatementParser {
             stmt.setWithSplit(true);
         }
 
+        if (lexer.identifierEquals(FnvHash.Constants.FORCE)) {
+            lexer.nextToken();
+
+            accept(EQ);
+
+            if (lexer.token() == TRUE) {
+                lexer.nextToken();
+                stmt.setForce(true);
+            } else if (lexer.token() == FALSE) {
+                lexer.nextToken();
+                stmt.setForce(false);
+            }
+        }
+
         return stmt;
     }
 
@@ -7991,6 +8005,16 @@ public class MySqlStatementParser extends SQLStatementParser {
 
         SQLCreateDatabaseStatement stmt = new SQLCreateDatabaseStatement(dbType);
 
+        if (lexer.token() == Token.HINT) {
+            List<SQLCommentHint> hints = this.exprParser.parseHints();
+            if (hints.size() == 1) {
+                String text = hints.get(0).getText();
+                if (text.endsWith(" IF NOT EXISTS") && text.charAt(0) == '!') {
+                    stmt.setIfNotExists(true);
+                }
+            }
+        }
+
         if (lexer.token() == Token.IF) {
             lexer.nextToken();
             accept(Token.NOT);
@@ -8870,7 +8894,9 @@ public class MySqlStatementParser extends SQLStatementParser {
         accept(Token.WHILE);
 
         accept(Token.SEMI);
-
+        
+        stmt.setAfterSemi(true);
+        
         return stmt;
 
     }
@@ -8900,7 +8926,9 @@ public class MySqlStatementParser extends SQLStatementParser {
         acceptIdentifier(label);
 
         accept(Token.SEMI);
-
+        
+        stmt.setAfterSemi(true);
+        
         return stmt;
 
     }

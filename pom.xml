@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.alibaba</groupId>
 	<artifactId>druid</artifactId>
-	<version>1.2.2_preview_01</version>
+	<version>1.2.4_preview_01</version>
 
 	<packaging>jar</packaging>
 	<name>druid</name>
@@ -13,7 +13,7 @@
 
 	<properties>
 		<spring.version>4.3.20.RELEASE</spring.version>
-		<junit.version>4.12</junit.version>
+		<junit.version>4.13.1</junit.version>
 		<jmh.version>1.19</jmh.version>
 
 		<gpg.skip>false</gpg.skip>
@@ -423,13 +423,13 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-api</artifactId>
-			<version>2.5</version>
+			<version>2.13.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
-			<version>2.5</version>
+			<version>2.13.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -468,7 +468,7 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.2.2</version>
+			<version>2.3.2</version>
 			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
@@ -549,6 +549,12 @@
 			<groupId>org.apache.hive</groupId>
 			<artifactId>hive-jdbc</artifactId>
 			<version>3.1.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ru.yandex.clickhouse</groupId>
+			<artifactId>clickhouse-jdbc</artifactId>
+			<version>0.2.4</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -694,21 +700,21 @@
 			<scope>test</scope>
 		</dependency>
 
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>tools</artifactId>
-            <version>1.8</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/openjdk-1.8-tools.jar</systemPath>
-        </dependency>
+		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>tools</artifactId>
+			<version>1.8</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/openjdk-1.8-tools.jar</systemPath>
+		</dependency>
 
-        <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>jconsole</artifactId>
-            <version>1.8</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/openjdk-1.8-jconsole.jar</systemPath>
-        </dependency>
+		<dependency>
+			<groupId>com.sun</groupId>
+			<artifactId>jconsole</artifactId>
+			<version>1.8</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/openjdk-1.8-jconsole.jar</systemPath>
+		</dependency>
 
 		<dependency>
 			<groupId>org.apache.curator</groupId>
