@@ -103,6 +103,8 @@ public class HiveCreateTableParser extends SQLCreateTableParser {
             }
 
             accept(Token.RPAREN);
+        } else if (lexer.token() == Token.LIKE) {
+            parseLike(stmt);
         }
 
         if (lexer.identifierEquals(FnvHash.Constants.ENGINE)) {
@@ -274,42 +276,11 @@ public class HiveCreateTableParser extends SQLCreateTableParser {
         }
 
         if (lexer.token() == Token.LIKE) {
-            lexer.nextToken();
-
-            if (lexer.identifierEquals(FnvHash.Constants.MAPPING)) {
-                SQLExpr like = this.exprParser.primary();
-                stmt.setLike(new SQLExprTableSource(like));
-            } else if (lexer.token() == Token.SELECT || lexer.token() == Token.LPAREN) {
-                SQLSelect select = this.createSQLSelectParser().select();
-                stmt.setLikeQuery(true);
-                stmt.setSelect(select);
-            } else {
-                SQLName name = this.exprParser.name();
-                stmt.setLike(name);
-            }
+            parseLike(stmt);
         }
 
         if (lexer.identifierEquals(FnvHash.Constants.TBLPROPERTIES)) {
-            lexer.nextToken();
-            accept(Token.LPAREN);
-
-            for (;;) {
-                String name = lexer.stringVal();
-                lexer.nextToken();
-                accept(Token.EQ);
-                SQLExpr value = this.exprParser.primary();
-                stmt.addTblProperty(name, value);
-                if (lexer.token() == Token.COMMA) {
-                    lexer.nextToken();
-                    if (lexer.token() == Token.RPAREN) {
-                        break;
-                    }
-                    continue;
-                }
-                break;
-            }
-
-            accept(Token.RPAREN);
+            parseTblProperties(stmt);
         }
 
         if (lexer.identifierEquals(FnvHash.Constants.META)) {
@@ -364,6 +335,51 @@ public class HiveCreateTableParser extends SQLCreateTableParser {
         }
 
         return stmt;
+    }
+
+    private void parseTblProperties(HiveCreateTableStatement stmt) {
+        lexer.nextToken();
+        accept(Token.LPAREN);
+
+        for (;;) {
+            String name = lexer.stringVal();
+            lexer.nextToken();
+            if (lexer.token() == Token.DOT) {
+                lexer.nextToken();
+                name += "." + lexer.stringVal();
+                lexer.nextToken();
+            }
+
+            accept(Token.EQ);
+            SQLExpr value = this.exprParser.primary();
+            stmt.addTblProperty(name, value);
+            if (lexer.token() == Token.COMMA) {
+                lexer.nextToken();
+                if (lexer.token() == Token.RPAREN) {
+                    break;
+                }
+                continue;
+            }
+            break;
+        }
+
+        accept(Token.RPAREN);
+    }
+
+    protected void parseLike(HiveCreateTableStatement stmt) {
+        lexer.nextToken();
+
+        if (lexer.identifierEquals(FnvHash.Constants.MAPPING)) {
+            SQLExpr like = this.exprParser.primary();
+            stmt.setLike(new SQLExprTableSource(like));
+        } else if (lexer.token() == Token.SELECT || lexer.token() == Token.LPAREN) {
+            SQLSelect select = this.createSQLSelectParser().select();
+            stmt.setLikeQuery(true);
+            stmt.setSelect(select);
+        } else {
+            SQLName name = this.exprParser.name();
+            stmt.setLike(name);
+        }
     }
 
     private void parseSortedBy(HiveCreateTableStatement stmt) {

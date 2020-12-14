@@ -797,6 +797,16 @@ public class OracleExprParser extends SQLExprParser {
         }
 
         accept(Token.RPAREN);
+
+        if (lexer.stringVal().equalsIgnoreCase("IGNORE")) {
+            lexer.nextToken();
+            acceptIdentifier("NULLS");
+            aggregateExpr.setIgnoreNulls(true);
+        } else if (lexer.identifierEquals(FnvHash.Constants.RESPECT)) {
+            lexer.nextToken();
+            acceptIdentifier("NULLS");
+            aggregateExpr.setIgnoreNulls(false);
+        }
         
         if (lexer.identifierEquals(FnvHash.Constants.WITHIN)) {
             lexer.nextToken();
@@ -897,6 +907,11 @@ public class OracleExprParser extends SQLExprParser {
                             }
                         } else {
                             beginExpr = relational();
+                        }
+
+                        final SQLOver.WindowingBound beginBound = parseWindowingBound();
+                        if (beginBound != null) {
+                            over.setWindowingBetweenBeginBound(beginBound);
                         }
 
                         accept(Token.AND);

@@ -2058,6 +2058,10 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
 
         print(')');
 
+        if (x.isIgnoreNulls()) {
+            print0(ucase ? " IGNORE NULLS" : " ignore nulls");
+        }
+
         SQLKeep keep = x.getKeep();
         if (keep != null) {
             print(' ');
@@ -2939,7 +2943,9 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
         }
 
         SQLSelect select = stmt.getSelect();
-        this.visit(select);
+        if (select != null) {
+            this.visit(select);
+        }
 
         return false;
     }
@@ -5273,6 +5279,16 @@ public class SQLASTOutputVisitor extends SQLASTVisitorAdapter implements Paramet
         x.getExpr().accept(this);
         this.indentCount--;
         print(')');
+
+        Boolean enforced = x.getEnforced();
+        if (enforced != null) {
+            if (enforced.booleanValue()) {
+                print0(ucase ? " ENFORCED" : " enforced");
+            } else {
+                print0(ucase ? " NOT ENFORCED" : " not enforced");
+            }
+        }
+
         return false;
     }
 
